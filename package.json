@@ -1,0 +1,52 @@
+{
+  "name": "hydro-evaluasi",
+  "version": "0.1.0",
+  "private": true,
+  "description": "HNC Evaluasi – mesin laporan",
+  "type": "module",
+  "engines": {
+    "node": ">=22"
+  },
+  "exports": {
+    "./core": "./src/core/index.ts",
+    "./report": "./src/report/index.ts",
+    "./certificate": "./src/certificate/index.ts"
+  },
+  "scripts": {
+    "typecheck": "tsc -p tsconfig.json && tsc -p tsconfig.scripts.json && tsc -p tsconfig.app.json",
+    "dev": "vite",
+    "build": "vite build",
+    "aktivasi": "tsx scripts/buat-aktivasi.ts",
+    "fidelitas": "tsx scripts/cek-fidelitas.ts",
+    "draf": "tsx scripts/tulis-draf-bank-kalimat.ts",
+    "sample": "tsx scripts/render-sample.tsx",
+    "cek:privasi": "tsx scripts/cek-privasi.ts",
+    "cek:browser": "tsx scripts/cek-browser.ts",
+    "cek:publik": "tsx scripts/cek-publik.ts",
+    "uji:app": "tsx scripts/uji-app.ts",
+    "cek": "npm run typecheck && npm run cek:privasi && npm run sample && npm run cek:browser && npm run build && tsx scripts/cek-publik.ts dist"
+  },
+  "dependencies": {
+    "@react-pdf/renderer": "4.9.0",
+    "buffer": "^6.0.3",
+    "react": "19.3.0"
+  },
+  "devDependencies": {
+    "@sparticuz/chromium": "153.0.0",
+    "@tailwindcss/vite": "^4.3.3",
+    "@types/node": "22.20.5",
+    "@types/react": "19.3.0",
+    "@types/react-dom": "^19.3.0",
+    "@vitejs/plugin-react": "^6.1.2",
+    "esbuild": "0.28.2",
+    "idb": "^8.0.4",
+    "puppeteer-core": "25.13.0",
+    "react-dom": "^19.3.0",
+    "tailwindcss": "^4.3.3",
+    "tsx": "4.23.15",
+    "typescript": "5.9.3",
+    "vite": "^8.3.4",
+    "vite-plugin-pwa": "^2.0.0",
+    "workbox-window": "^7.4.1"
+  }
+}
