@@ -120,6 +120,8 @@ export interface LaporanSiap {
     kontak: string;
   };
   catatanKaki: { cakupan: string | null };
+  /** Logo mitra YASI di sampul dan lembar pengesahan. */
+  mitraYasi: boolean;
   asumsi: string[];
   peringatan: string[];
 }
@@ -330,6 +332,7 @@ export function siapkanLaporan(input: LaporanInput, opsi: OpsiSiapkan = {}): Lap
       kontak: kalimatKontak(KL),
     },
     catatanKaki: { cakupan: k.skor.perluCatatanCakupan ? CATATAN_CAKUPAN : null },
+    mitraYasi: input.anak.mitraYasi === true,
     asumsi: [...(input.asumsi ?? [])],
     peringatan,
   };

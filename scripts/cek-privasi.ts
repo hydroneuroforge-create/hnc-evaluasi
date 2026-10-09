@@ -40,7 +40,7 @@ const terlacak = baris(git(['ls-files']).keluaran);
 const staged = baris(git(['diff', '--cached', '--name-only', '--diff-filter=ACMR']).keluaran);
 for (const f of new Set([...terlacak, ...staged])) {
   for (const [pola, alasan] of ATURAN_JALUR) if (pola.test(f)) masalah.push(`jalur terlarang (${alasan}): ${f}`);
-  if (/\.png$/i.test(f) && !/^assets\/logo-center[^/]*\.png$/.test(f) && !/^app\/public\/(ikon-[a-z0-9-]+|logo-kecil)\.png$/.test(f)) masalah.push(`PNG di luar assets/logo-center*.png: ${f}`);
+  if (/\.png$/i.test(f) && !/^assets\/logo-(center|yasi)[^/]*\.png$/.test(f) && !/^app\/public\/(ikon-[a-z0-9-]+|logo-kecil)\.png$/.test(f)) masalah.push(`PNG di luar assets/logo-center*.png / assets/logo-yasi*.png: ${f}`);
 }
 
 // --- 2. content ----------------------------------------------------------------------------------------------

@@ -33,6 +33,7 @@ export function bacaAset(opsi: { ttd?: boolean; fontSebagaiDataUri?: boolean } =
     fonts,
     logoLockup: dataUri(join(DIR_ASET, 'logo-center-lockup.png'), 'image/png'),
     logoMark: dataUri(join(DIR_ASET, 'logo-center-mark.png'), 'image/png'),
+    logoYasi: dataUri(join(DIR_ASET, 'logo-yasi.png'), 'image/png'),
     ttd,
   };
 }

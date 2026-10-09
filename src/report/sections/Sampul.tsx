@@ -1,7 +1,9 @@
 // 1. Sampul (cover): logo lockup, title, child's name, period, sessions, therapists, report number and a vector
 // water-wave motif at the bottom (never under the logo). No kop, no footer, no photo.
+// Partner children (siap.mitraYasi): YASI logo beside the lockup (LogoKemitraan); layout below is unchanged.
 import { Defs, Image, LinearGradient, Page, Path, Stop, Svg, Text, View } from '@react-pdf/renderer';
 import type { PropsBagian } from '../components/Halaman.tsx';
+import { LogoKemitraan } from '../components/LogoKemitraan.tsx';
 import { gayaHalaman, Spanduk } from '../components/Halaman.tsx';
 import { ANGKA, HALAMAN, WARNA } from '../theme.ts';
 
@@ -47,7 +49,11 @@ export function Sampul({ siap, aset, spanduk }: PropsBagian) {
     <Page size="A4" style={{ ...gayaHalaman, paddingHorizontal: 56, paddingTop: 70 }} bookmark={{ title: 'Sampul', fit: true }}>
       {spanduk ? <Spanduk teks={spanduk} top={30} /> : null}
       <View style={{ alignItems: 'center' }}>
-        <Image src={aset.logoLockup} style={{ width: 205, height: 80.1 }} />
+        {siap.mitraYasi ? (
+          <LogoKemitraan lockup={aset.logoLockup} lebar={205} tinggi={80.1} yasi={aset.logoYasi} />
+        ) : (
+          <Image src={aset.logoLockup} style={{ width: 205, height: 80.1 }} />
+        )}
       </View>
       <View style={{ alignItems: 'center', marginTop: 92 }}>
         <Text style={{ fontSize: 7.4, fontWeight: 600, color: WARNA.aksen, letterSpacing: 2.6 }}>LAPORAN EVALUASI</Text>

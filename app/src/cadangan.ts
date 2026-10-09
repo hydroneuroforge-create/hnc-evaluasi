@@ -35,6 +35,7 @@ export function periksaCadangan(teks: string): { c: Cadangan; ringkasan: Ringkas
   return { c, ringkasan: { anak: c.data.anak.length, sesi: c.data.sesi.length, evaluasi: c.data.evaluasi.length, laporan: c.data.laporan.length, dibuat: c.dibuat } };
 }
 
+// Older child records without mitraYasi restore as "off" (no logo); the field round-trips untouched.
 /** Replaces all data (local-only settings such as PIN and activation are kept). */
 export async function pulihkan(c: Cadangan): Promise<void> {
   const d = await db();

@@ -48,6 +48,7 @@ export function validasiInput(input: unknown): string[] {
     for (const f of ['namaLengkap', 'namaPanggilan', 'tempatLahir', 'diagnosa'] as const) if (!isTeks(a[f])) e.push(`anak.${f} wajib diisi`);
     if (typeof a.tanggalLahir !== 'string' || !isoValid(a.tanggalLahir)) e.push(`anak.tanggalLahir tidak valid: "${String(a.tanggalLahir)}"`);
     if (a.jenisKelamin !== 'L' && a.jenisKelamin !== 'P') e.push('anak.jenisKelamin harus "L" atau "P"');
+    if (a.mitraYasi !== undefined && typeof a.mitraYasi !== 'boolean') e.push('anak.mitraYasi harus true atau false');
   }
 
   const tambahanProgram = Array.isArray(x.programTambahan) ? x.programTambahan : [];

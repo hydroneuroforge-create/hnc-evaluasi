@@ -4,6 +4,7 @@ import { renderSertifikatPdf } from '../../src/certificate/index.ts';
 import { FACES, renderLaporanPdf, type AsetRender, type FaceKey } from '../../src/report/index.ts';
 import logoLockupUrl from '../../assets/logo-center-lockup.png?url';
 import logoMarkUrl from '../../assets/logo-center-mark.png?url';
+import logoYasiUrl from '../../assets/logo-yasi.png?url';
 
 const fontUrl = import.meta.glob('../../assets/fonts/*.ttf', { query: '?url', import: 'default', eager: true }) as Record<string, string>;
 
@@ -26,8 +27,8 @@ function muatAset(): Promise<Omit<AsetRender, 'ttd'>> {
       if (!url) throw new Error(`font ${f.berkas} tidak ditemukan`);
       fonts[f.kunci] = new URL(url, location.href).href;
     }
-    const [logoLockup, logoMark] = await Promise.all([keDataUri(logoLockupUrl), keDataUri(logoMarkUrl)]);
-    return { fonts, logoLockup, logoMark };
+    const [logoLockup, logoMark, logoYasi] = await Promise.all([keDataUri(logoLockupUrl), keDataUri(logoMarkUrl), keDataUri(logoYasiUrl)]);
+    return { fonts, logoLockup, logoMark, logoYasi };
   })();
   asetDasar.catch(() => { asetDasar = null; });
   return asetDasar;

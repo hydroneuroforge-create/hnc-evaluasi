@@ -12,6 +12,8 @@ export interface AsetRender {
   logoLockup: string;
   /** Logo symbol only (assets/logo-center-mark.png) as a data URI, used in the kop. */
   logoMark: string;
+  /** Partner logo (assets/logo-yasi.png) as a data URI; printed only when siap.mitraYasi. */
+  logoYasi: string;
   /** Transparent signature PNGs as data URIs; a missing one renders an empty signing line. */
   ttd: Partial<Record<KunciPenandatangan, string>>;
 }

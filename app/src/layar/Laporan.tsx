@@ -6,7 +6,7 @@ import {
   ambilAnak, ambilEvaluasi, ambilLaporan, evaluasiAnak, hapus, idBaru, sesiAnak, simpan, tulisPengaturan,
   type Anak, type Evaluasi, type Laporan, type Sesi,
 } from '../db.ts';
-import { buatInput, evaluasiSelesai, hariIni, namaBerkas, tanggalTampil, type OpsiLaporan } from '../logika.ts';
+import { buatInput, evaluasiSelesai, hariIni, namaBerkas, tanggalTampil, terapkanMitra, type OpsiLaporan } from '../logika.ts';
 import { catatNomor, konteksKlinik, nomorBerikutnya } from '../pengaturan.ts';
 import { bagikanBerkas, Isian, Kartu, keRute, Layar, PilihBulan, toast, Tombol, unduhBerkas } from '../ui.tsx';
 
@@ -222,8 +222,9 @@ export function LihatLaporan({ id }: { id: string }) {
         <p className="font-bold text-navy text-[17px]">{l.nomor}</p>
         <p className="text-lembut text-[15px]">{anak.namaLengkap} · {tanggalTampil(l.tanggal)} · {formatPeriodeBulan(periodeBulan(l.input).awal, periodeBulan(l.input).akhir)}</p>
         <p className="text-[13px] text-samar mt-1">Isi laporan dibekukan saat dibuat, sehingga PDF yang dibuat ulang tetap sama.</p>
+        {anak.mitraYasi ? <p className="text-[13px] text-samar mt-1">Logo YASI ditampilkan di sampul, lembar pengesahan dan sertifikat (atur di data anak).</p> : null}
       </Kartu>
-      <PembuatPdf input={l.input} anak={anak} ttd={ttd} labelTombol="Buka PDF laporan" />
+      <PembuatPdf input={terapkanMitra(l.input, anak)} anak={anak} ttd={ttd} labelTombol="Buka PDF laporan" />
       <Tombol varian="halus" className="w-full" onClick={() => setUbahTeks(!ubahTeks)}>{ubahTeks ? 'Selesai mengubah teks' : 'Ubah teks laporan'}</Tombol>
       {ubahTeks ? <TinjauNarasi input={l.input} teks={l.input.teks ?? {}} onTeks={setTeks} /> : null}
       <SertifikatKartu l={l} anak={anak} ttd={ttd} onSimpan={(s) => { const b = { ...l, sertifikat: s }; setL(b); void simpan('laporan', b); }} />
@@ -248,7 +249,7 @@ function SertifikatKartu({ l, anak, ttd, onSimpan }: { l: Laporan; anak: Anak; t
   const buat = async (varian: 'a4' | 'sosial') => {
     setProses(varian); setGalat('');
     try {
-      const input: LaporanInput = { ...l.input, sertifikat: { pencapaian: s.pencapaian, tanggal: s.tanggal, tempat: l.input.laporan.tempat } };
+      const input: LaporanInput = { ...terapkanMitra(l.input, anak), sertifikat: { pencapaian: s.pencapaian, tanggal: s.tanggal, tempat: l.input.laporan.tempat } };
       setHasil({ varian, pdf: await (await muatPdf()).buatPdfSertifikat(input, ttd, varian) });
     } catch (e) { setGalat((e as Error).message); }
     setProses('');

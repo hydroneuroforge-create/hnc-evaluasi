@@ -94,6 +94,7 @@ export function buatInput(anak: Anak, evaluasi: Evaluasi[], ini: Evaluasi, sesi:
       namaLengkap: anak.namaLengkap.trim(), namaPanggilan: anak.namaPanggilan.trim(), tempatLahir: anak.tempatLahir.trim(),
       tanggalLahir: anak.tanggalLahir, jenisKelamin: anak.jenisKelamin, diagnosa: diagnosaMarkup(anak.diagnosa.trim()),
       ...(anak.bergabungSejak ? { bergabungSejak: anak.bergabungSejak } : {}),
+      ...(anak.mitraYasi ? { mitraYasi: true } : {}),
     },
     sebelum: keAsesmen(sebelum.asesmen, ids),
     sesudah: keAsesmen(ini.asesmen, ids),
@@ -104,6 +105,14 @@ export function buatInput(anak: Anak, evaluasi: Evaluasi[], ini: Evaluasi, sesi:
     teks: opsi.teks,
     klinik,
   };
+}
+
+/** Logo mitra mengikuti data anak saat ini (juga untuk laporan lama). */
+export function terapkanMitra(input: LaporanInput, anak: Anak): LaporanInput {
+  const ya = anak.mitraYasi === true;
+  if ((input.anak.mitraYasi === true) === ya) return input;
+  const { mitraYasi: _, ...sisa } = input.anak;
+  return { ...input, anak: ya ? { ...sisa, mitraYasi: true } : sisa };
 }
 
 /** Suggested 'Bergabung sejak': month of the earliest logged session or evaluation. */
