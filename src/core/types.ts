@@ -72,6 +72,8 @@ export interface Anak {
   diagnosa: string;
   /** Month the child joined, 'YYYY-MM' (optional; start of the report period). */
   bergabungSejak?: string;
+  /** Peserta dari Yayasan Anak Spesial Indonesia: logo YASI di sampul, lembar pengesahan dan sertifikat. Tidak ada = tidak. */
+  mitraYasi?: boolean;
 }
 
 export interface ProgramItemDef {

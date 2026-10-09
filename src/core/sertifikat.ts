@@ -17,6 +17,8 @@ export interface SertifikatSiap {
   tempatTanggal: string;
   penandatangan: readonly Penandatangan[];
   klinik: { nama: string; ig: string };
+  /** Logo mitra YASI di samping logo HNC. */
+  mitraYasi: boolean;
   meta: { judul: string; penulis: string; pembuat: string; bahasa: 'id' };
 }
 
@@ -45,6 +47,7 @@ export function siapkanSertifikat(input: LaporanInput): SertifikatSiap {
     tempatTanggal: `${s.tempat}, ${formatTanggal(s.tanggal)}`,
     penandatangan: KL.penandatangan,
     klinik: { nama: KL.nama, ig: KL.kontak.ig },
+    mitraYasi: input.anak.mitraYasi === true,
     meta: { judul: `${TEKS_SERTIFIKAT.judul} – ${input.anak.namaLengkap}`, penulis: KL.nama, pembuat: KL.aplikasi, bahasa: 'id' },
   };
 }

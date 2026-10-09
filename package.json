@@ -24,6 +24,8 @@
     "cek:browser": "tsx scripts/cek-browser.ts",
     "cek:publik": "tsx scripts/cek-publik.ts",
     "uji:app": "tsx scripts/uji-app.ts",
+    "contoh:mitra": "tsx scripts/render-mitra.tsx",
+    "uji:mitra": "tsx scripts/uji-mitra-app.ts",
     "cek": "npm run typecheck && npm run cek:privasi && npm run sample && npm run cek:browser && npm run build && tsx scripts/cek-publik.ts dist"
   },
   "dependencies": {

@@ -4,12 +4,14 @@
 // 2. if headless Chromium (@sparticuz/chromium) starts, the bundle is served from http://cek.lokal/ via request
 //    interception, every other non-data:/blob: request is aborted and counted, and the report is rendered in
 //    the page with the input + assets passed in at runtime. Asserts %PDF, pages >= 10 and blocked = [].
+// --fiktif: render the fictitious YASI-partner sample (scripts/lib/contoh-fiktif.ts) instead of the private data.
 // Output goes to node_modules/.cache/hnc-cek-browser/ (never committed). Full device testing is Phase 2.
 import { builtinModules } from 'node:module';
 import { mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { build } from 'esbuild';
 import { bacaAset } from './lib/aset-node.ts';
+import { buatContohFiktif } from './lib/contoh-fiktif.ts';
 import { bacaDataAnak } from './lib/data-privat.ts';
 import { DIR_REPO } from './lib/jalur.ts';
 
@@ -64,7 +66,7 @@ try {
   page.on('pageerror', (e) => console.log(`pageerror: ${(e as Error).message}`));
   await page.goto('http://cek.lokal/', { waitUntil: 'load' });
   await page.waitForFunction('typeof globalThis.cekLaporan === "function"', { timeout: 30000 });
-  const input = bacaDataAnak();
+  const input = process.argv.includes('--fiktif') ? buatContohFiktif({ yasi: true }) : bacaDataAnak();
   const aset = bacaAset({ fontSebagaiDataUri: true });
   const r = await page.evaluate(
     (i, a) => (globalThis as unknown as { cekLaporan: (x: unknown, y: unknown) => Promise<{ ok: boolean; bytes: number; kepala: string; halaman: number; b64?: string; galat?: string }> }).cekLaporan(i, a),

@@ -1,8 +1,10 @@
 // 11. Lembar Pengesahan: logo lockup, place/date (bold), two signature blocks (image ~40 mm, name bold +
 // underlined, role, STR) and the single small contact line (D6). No stamp. A missing signature leaves an empty line.
+// Partner children (siap.mitraYasi): YASI logo beside the lockup (LogoKemitraan); layout below is unchanged.
 import { Image, Text, View } from '@react-pdf/renderer';
 import { HalamanIsi, type PropsBagian } from '../components/Halaman.tsx';
 import { JudulBagian } from '../components/JudulBagian.tsx';
+import { LogoKemitraan } from '../components/LogoKemitraan.tsx';
 import { TeksKaya } from '../components/TeksKaya.tsx';
 import { ANGKA, WARNA } from '../theme.ts';
 
@@ -19,7 +21,11 @@ export function Pengesahan(p: PropsBagian & { nomor?: number }) {
         <JudulBagian judul="Lembar Pengesahan" inggris="Approval" nomor={p.nomor} />
         <View style={{ borderWidth: 0.7, borderColor: WARNA.garis, borderRadius: 8, paddingVertical: 26, paddingHorizontal: 22, marginTop: 6 }}>
           <View style={{ alignItems: 'center', marginBottom: 22 }}>
-            <Image src={aset.logoLockup} style={{ width: 150, height: 58.6 }} />
+            {siap.mitraYasi ? (
+              <LogoKemitraan lockup={aset.logoLockup} lebar={150} tinggi={58.6} yasi={aset.logoYasi} />
+            ) : (
+              <Image src={aset.logoLockup} style={{ width: 150, height: 58.6 }} />
+            )}
           </View>
           <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 14 }}>
             <View>

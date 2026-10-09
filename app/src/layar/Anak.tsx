@@ -58,6 +58,12 @@ export function FormAnak({ id }: { id?: string }) {
             ))}
           </div>
         </div>
+        <label className="flex items-start gap-3 min-h-11">
+          <input type="checkbox" className="size-5 mt-0.5 accent-[#24546C]" checked={a.mitraYasi === true}
+            onChange={(e) => { const { mitraYasi: _, ...r } = a; setA(e.target.checked ? { ...r, mitraYasi: true } : r); }} />
+          <span className="text-[15px]">Peserta dari Yayasan Anak Spesial Indonesia
+            <span className="block text-[13px] text-samar">Tampilkan logo YASI di laporan & sertifikat</span></span>
+        </label>
       </Kartu>
       {id ? (
         <Tombol varian="bahaya" className="w-full" onClick={async () => {
@@ -96,6 +102,7 @@ export function ProfilAnak({ id }: { id: string }) {
         <p className="text-[19px] font-bold text-navy">{anak.namaLengkap}</p>
         <p className="text-lembut text-[15px] mt-0.5">{anak.tempatLahir}, {tanggalTampil(anak.tanggalLahir)} · {usiaTampil(anak.tanggalLahir)} · {anak.jenisKelamin === 'L' ? 'Laki-laki' : 'Perempuan'}</p>
         <p className="text-[15px] mt-1">{anak.diagnosa}</p>
+        {anak.mitraYasi ? <div className="mt-1"><Lencana>Mitra YASI</Lencana></div> : null}
         {anak.bergabungSejak ? <p className="text-[14px] text-lembut mt-0.5">Bergabung sejak {formatBulanTahun(anak.bergabungSejak)}</p> : null}
         <div className="mt-3 flex flex-wrap gap-2 items-center">
           <span className="text-[14px]">Sesi sejak evaluasi terakhir: <b>{n}/{SESI_EVALUASI}</b></span>

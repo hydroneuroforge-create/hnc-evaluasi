@@ -14,6 +14,8 @@ export interface Anak {
   diagnosa: string;
   /** Month the child joined, 'YYYY-MM' (optional; default start of the report period). */
   bergabungSejak?: string;
+  /** Peserta dari Yayasan Anak Spesial Indonesia (logo YASI di laporan & sertifikat). Tidak ada = tidak. */
+  mitraYasi?: boolean;
   /** Custom 'Program Individual' activities; carried into every later evaluation. */
   programIndividual: ProgramItemDef[];
   dibuat: number;
