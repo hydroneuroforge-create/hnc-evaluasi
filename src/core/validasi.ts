@@ -4,7 +4,7 @@ import { rekomendasiDef } from './bank/rekomendasi.ts';
 import { ID_SOROTAN } from './generator/sorotan.ts';
 import { kegiatanDef, tambahanKegiatan } from './master/kegiatan.ts';
 import { semuaItemProgram } from './master/program.ts';
-import { isoValid } from './tanggal.ts';
+import { bulanValid, isoValid } from './tanggal.ts';
 import { KEGIATAN_IDS, REFLEKS_IDS, SENSORI_IDS, type LaporanInput } from './types.ts';
 
 const BLOK = new Set(['manfaat', 'saran', 'penutup', 'bukti']);
@@ -31,7 +31,12 @@ export function validasiInput(input: unknown): string[] {
     if (!isTeks(l.nomor)) e.push('laporan.nomor wajib diisi');
     if (!isTeks(l.tempat)) e.push('laporan.tempat wajib diisi');
     if (typeof l.tanggal !== 'string' || !isoValid(l.tanggal)) e.push(`laporan.tanggal tidak valid: "${String(l.tanggal)}"`);
-    if (!(Number.isInteger(l.jumlahSesi) && (l.jumlahSesi as number) >= 1)) e.push('laporan.jumlahSesi harus bilangan bulat ≥ 1');
+    if (l.jumlahSesi !== undefined && !(Number.isInteger(l.jumlahSesi) && (l.jumlahSesi as number) >= 0)) e.push('laporan.jumlahSesi harus bilangan bulat ≥ 0');
+    if (l.periode !== undefined) {
+      const p = l.periode as { awal?: unknown; akhir?: unknown };
+      if (!isObj(p) || typeof p.awal !== 'string' || typeof p.akhir !== 'string' || !bulanValid(p.awal) || !bulanValid(p.akhir)) e.push('laporan.periode harus { awal, akhir } berformat YYYY-MM');
+      else if (p.awal > p.akhir) e.push('laporan.periode.awal tidak boleh setelah akhir');
+    }
     if (!isObj(l.evaluasiBerikutnya) || !(Number.isInteger(l.evaluasiBerikutnya.setelahSesi) && (l.evaluasiBerikutnya.setelahSesi as number) >= 1)) {
       e.push('laporan.evaluasiBerikutnya.setelahSesi harus bilangan bulat ≥ 1');
     }

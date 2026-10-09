@@ -4,8 +4,8 @@ import type { TeksBank } from '../types.ts';
 const B = (teks: string, catatan?: string): TeksBank => ({ teks, sumber: 'BARU', ...(catatan ? { catatan } : {}) });
 
 export const RINGKAS_ORTU = {
-  pembuka: B('Selama {jumlahSesi} sesi hidroterapi ({periode}), {anandaPanggilan} menunjukkan perkembangan {kategori}.'),
-  pembukaStabil: B('Selama {jumlahSesi} sesi hidroterapi ({periode}), {anandaPanggilan} menunjukkan kondisi yang relatif stabil.'),
+  pembuka: B('Selama periode {periode}, {anandaPanggilan} menunjukkan perkembangan {kategori}.'),
+  pembukaStabil: B('Selama periode {periode}, {anandaPanggilan} menunjukkan kondisi yang relatif stabil.'),
   skorNaik: B('Skor perkembangan meningkat dari {skorAwal} menjadi {skorAkhir} (+{selisih} poin).'),
   skorTetap: B('Skor perkembangan tercatat {skorAkhir}, dibandingkan {skorAwal} pada evaluasi awal.'),
   domainTeratas: B('Kemajuan terbesar terlihat pada aspek {daftar}.'),

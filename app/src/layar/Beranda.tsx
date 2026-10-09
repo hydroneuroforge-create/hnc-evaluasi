@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { formatBulanTahun } from '../../../src/core/index.ts';
 import { hapus, idBaru, semuaAnak, semuaEvaluasi, semuaSesi, simpan, type Anak, type Evaluasi, type Sesi } from '../db.ts';
 import { hariIni, SESI_EVALUASI, sesiSejakEvaluasi, sudahEnamBulan, usiaTampil } from '../logika.ts';
 import { Kartu, keRute, Layar, Lencana, toast, Tombol, useData } from '../ui.tsx';
@@ -46,6 +47,7 @@ function KartuAnak({ anak, sesi, evaluasi }: { anak: Anak; sesi: Sesi[]; evaluas
           <div className="min-w-0 flex-1">
             <p className="text-[17px] font-bold text-navy truncate">{anak.namaLengkap}</p>
             <p className="text-[14px] text-lembut truncate">{usiaTampil(anak.tanggalLahir)} · {anak.diagnosa || '–'}</p>
+            {anak.bergabungSejak ? <p className="text-[13px] text-samar truncate">Bergabung sejak {formatBulanTahun(anak.bergabungSejak)}</p> : null}
           </div>
         </div>
         <div className="mt-3 flex flex-wrap items-center gap-2">

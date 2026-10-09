@@ -12,6 +12,8 @@ export interface Anak {
   jenisKelamin: 'L' | 'P';
   /** Plain text as typed (known English diagnoses are italicised for the report). */
   diagnosa: string;
+  /** Month the child joined, 'YYYY-MM' (optional; default start of the report period). */
+  bergabungSejak?: string;
   /** Custom 'Program Individual' activities; carried into every later evaluation. */
   programIndividual: ProgramItemDef[];
   dibuat: number;

@@ -12,7 +12,7 @@ import { SENSORI } from '../master/sensori.ts';
 import { labelLevel, nilaiBerikutnya, peringkat } from '../skala.ts';
 import { cekSyarat } from '../syarat.ts';
 import { buatParagraf, gabungDaftar, gabungKalimat } from '../teks.ts';
-import { formatPeriode } from '../tanggal.ts';
+import { formatPeriodeBulan, periodeBulan } from '../tanggal.ts';
 import type { Level, Paragraf } from '../types.ts';
 import { isi, keParagraf, type Konteks } from './konteks.ts';
 import type { Sorotan } from './sorotan.ts';
@@ -159,8 +159,7 @@ export function buatRingkasanOrtu(k: Konteks, sorotan: Sorotan[], rekomendasi: R
   const kategori = kategoriDari(k.skor.keseluruhan.selisih);
   const ks = k.skor.keseluruhan;
   const token = {
-    jumlahSesi: k.input.laporan.jumlahSesi,
-    periode: formatPeriode(k.input.sebelum.tanggal, k.input.sesudah.tanggal),
+    periode: formatPeriodeBulan(periodeBulan(k.input).awal, periodeBulan(k.input).akhir),
     skorAwal: ks.awalBulat, skorAkhir: ks.akhirBulat, selisih: ks.selisih,
   };
   const bagian = [

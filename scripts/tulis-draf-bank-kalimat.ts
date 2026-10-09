@@ -64,8 +64,7 @@ const ISIAN: Record<string, string> = {
   awal: '[persentase awal]',
   akhir: '[persentase sekarang]',
   bintangTerbaikSesudah: '[bintang tertinggi saat ini]',
-  jumlahSesi: '[jumlah sesi]',
-  periode: '[periode]',
+  periode: '[periode, bulan dan tahun]',
   skorAwal: '[skor awal]',
   skorAkhir: '[skor sekarang]',
   selisih: '[selisih]',
@@ -342,6 +341,7 @@ tulis('## 8. Halaman Ringkasan untuk Orang Tua', '',
   entri(R.domainTeratas, 'Aspek dengan kemajuan terbesar', { ganti: { daftar: '[aspek dengan kemajuan terbesar]' } }),
   entri(R.penutup, 'Penutup', { ganti: { daftar: '[dua rekomendasi utama]' } }),
   entri(R.catatanSkor, 'Catatan kecil di bawah skor'), '',
+  '_Pembaruan: kalimat pembuka kini hanya menyebut periode, yaitu bulan dan tahun bergabung sampai bulan dan tahun evaluasi, tanpa jumlah sesi; laporan tidak lagi mencetak jumlah sesi._', '',
   `Hasil untuk Ananda: ${siap.ringkasan.paragraf.markup}`, '');
 
 // 9 -------------------------------------------------------------------------------------------------------

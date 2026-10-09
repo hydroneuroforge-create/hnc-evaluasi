@@ -123,9 +123,13 @@ try {
   // child
   await klik('+ Anak');
   await isi('Nama lengkap', 'Budi Santoso'); await isi('Nama panggilan', 'Budi'); await isi('Tempat lahir', 'Bogor'); await isi('Tanggal lahir', '2019-06-20');
+  await page.select('select[aria-label="Bergabung sejak bulan"]', '6');
+  await page.type('input[aria-label="Bergabung sejak tahun"]', '2024');
   await klik('Cerebral Palsy', { persis: true });
+  await layar('form-anak');
   await klik('Simpan', { persis: true });
   cek(await ada('Budi Santoso'), 'anak fiktif ditambahkan');
+  cek(await ada('Bergabung sejak Juni'), 'profil: Bergabung sejak Juni 2024');
 
   // Evaluasi Awal (Jan 2025)
   await klik('Evaluasi Awal', { persis: true });
@@ -173,6 +177,8 @@ try {
   cek(await ada('Tinjau narasi', 30000), 'layar Buat laporan + tinjau narasi');
   const nomor = await page.evaluate(() => (([...document.querySelectorAll('label')].find((l) => l.textContent?.includes('Nomor laporan'))!.querySelector('input') as HTMLInputElement).value));
   cek(/^HNC\/EV\/\d{4}\/\d{2}\/001$/.test(nomor), `nomor laporan otomatis ${nomor}`);
+  const pratinjau = await page.evaluate(() => document.querySelector('[data-pratinjau-periode] b')?.textContent ?? '');
+  cek(pratinjau.startsWith('Juni\u00a02024 – '), `pratinjau periode: ${pratinjau}`);
   await klik('Kesimpulan', { persis: false, indeks: 0 });
   await setSel('[data-paragraf="kesimpulan.p1"] textarea', EDIT);
   cek(await ada('Kembalikan ke teks otomatis'), 'narasi diubah (tombol kembalikan tampil)');
@@ -189,6 +195,19 @@ try {
     cek(inf.halaman >= 15, `PDF laporan ${inf.halaman} halaman`);
     cek(b <= 1.5 * 1024 * 1024, `ukuran PDF browser ${(b / 1024 / 1024).toFixed(2)} MB (≤ 1,5 MB)`);
     cek(inf.ada, 'teks yang diubah ada di PDF');
+    // period on cover / Ringkasan / Pengesahan; no attended-session count; no sessions-per-month chart
+    const r = spawnSync('python3', ['-c', `import sys,json,pymupdf;d=pymupdf.open(sys.argv[1]);print(json.dumps([p.get_text() for p in d]))`, pdf], { encoding: 'utf8', env: { ...process.env, PYENV_VERSION: '3.11.15' } });
+    const hal: string[] = JSON.parse(r.stdout).map((t: string) => t.replace(/[\s\u00a0]+/g, ' '));
+    const per = /Juni 2024 – \S+ \d{4}|Juni 2024 –\s*\S+ \d{4}/;
+    const iRing = hal.findIndex((t) => t.includes('Ringkasan untuk Orang Tua') && t.includes('Pencapaian Utama'));
+    const iSah = hal.findIndex((t) => t.includes('Lembar Pengesahan') && /Bogor, \d{1,2} \S+ \d{4}/.test(t));
+    cek(per.test(hal[0] ?? ''), `periode di sampul: ${(hal[0] ?? '').match(per)?.[0] ?? '–'}`);
+    cek(iRing >= 0 && per.test(hal[iRing]!) && hal[iRing]!.includes('Selama periode Juni 2024'), 'periode di Ringkasan (strip + kalimat pembuka)');
+    cek(iSah >= 0 && per.test(hal[iSah]!), 'periode di Lembar Pengesahan (tanggal tanda tangan tetap lengkap)');
+    const semua = hal.join(' ');
+    const angkaSesi = [...semua.matchAll(/\d+ sesi\b(?! berikutnya)/gi)].map((m) => m[0]).filter((m) => !/^24 Sesi$/.test(m) || !semua.includes('Target 24 Sesi Berikutnya'));
+    cek(!angkaSesi.length && !/Jumlah Sesi/i.test(semua), `tanpa jumlah sesi di PDF${angkaSesi.length ? `: ${angkaSesi.join(', ')}` : ''}`);
+    cek(!semua.includes('Kehadiran Sesi per Bulan'), 'grafik sesi per bulan tidak ada');
   } else cek(false, 'PDF laporan terunduh');
 
   // certificate (social variant + A4)

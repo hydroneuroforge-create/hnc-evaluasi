@@ -1,5 +1,5 @@
 // 8. Grafik Tren: overall score per evaluation, per-domain change table, and sessions-per-month bars ONLY when
-// a session log exists (no chart and no placeholder otherwise).
+// opsi.grafikSesi is on and a session log exists (default off: the report never prints session counts).
 import { Text, View } from '@react-pdf/renderer';
 import { BarPasangan } from '../charts/BarBab.tsx';
 import { BarSesi } from '../charts/BarSesi.tsx';

@@ -1,4 +1,5 @@
 // Date helpers (Indonesian formatting). All computations use UTC so results never depend on the device time zone.
+import type { LaporanInput } from './types.ts';
 
 export const NAMA_BULAN = [
   'Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember',
@@ -62,6 +63,32 @@ export function formatUsia(u: { tahun: number; bulan: number }): string {
 /** '25 September 2025 – 10 Februari 2026' */
 export function formatPeriode(awalIso: string, akhirIso: string): string {
   return `${formatTanggal(awalIso)} – ${formatTanggal(akhirIso)}`;
+}
+
+/** 'YYYY-MM' (or an ISO date) → 'Juni\u00a02024'. */
+export function formatBulanTahun(ym: string): string {
+  const [th, bl] = ym.split('-').map(Number);
+  return `${NAMA_BULAN[bl! - 1]}\u00a0${th}`;
+}
+
+export function bulanValid(ym: string): boolean {
+  const m = /^(\d{4})-(\d{2})$/.exec(ym);
+  return !!m && Number(m[2]) >= 1 && Number(m[2]) <= 12;
+}
+
+/** The report period as 'YYYY-MM' pair: explicit, else anak.bergabungSejak / BEFORE evaluation → AFTER evaluation. */
+export function periodeBulan(input: Pick<LaporanInput, 'laporan' | 'anak' | 'sebelum' | 'sesudah'>): { awal: string; akhir: string } {
+  return {
+    awal: input.laporan.periode?.awal ?? input.anak.bergabungSejak ?? input.sebelum.tanggal.slice(0, 7),
+    akhir: input.laporan.periode?.akhir ?? input.sesudah.tanggal.slice(0, 7),
+  };
+}
+
+/** 'Juni 2024 – Mei 2025' (month + year, non-breaking space inside each); a single month if start = end. */
+export function formatPeriodeBulan(awal: string, akhir: string): string {
+  const a = formatBulanTahun(awal);
+  const b = formatBulanTahun(akhir);
+  return a === b ? a : `${a} – ${b}`;
 }
 
 export function bandingkanIso(a: string, b: string): number {

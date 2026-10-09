@@ -70,6 +70,8 @@ export interface Anak {
   jenisKelamin: 'L' | 'P';
   /** Markup, e.g. '_Contoh Diagnosa_'. */
   diagnosa: string;
+  /** Month the child joined, 'YYYY-MM' (optional; start of the report period). */
+  bergabungSejak?: string;
 }
 
 export interface ProgramItemDef {
@@ -102,12 +104,16 @@ export interface NarasiInput {
 
 export interface LaporanInput {
   versi: 1;
-  opsi?: { setSkala?: 'A' | 'B'; maksRekomendasi?: number };
+  /** grafikSesi: render the sessions-per-month chart (default off; the report never prints session counts). */
+  opsi?: { setSkala?: 'A' | 'B'; maksRekomendasi?: number; grafikSesi?: boolean };
   laporan: {
     nomor: string;
     tempat: string;
     tanggal: string; // ISO
-    jumlahSesi: number;
+    /** Legacy; no longer printed. */
+    jumlahSesi?: number;
+    /** Report period, 'YYYY-MM' each. Default: anak.bergabungSejak (else the BEFORE evaluation) → the AFTER evaluation. */
+    periode?: { awal: string; akhir: string };
     evaluasiBerikutnya: { setelahSesi: number };
   };
   anak: Anak;

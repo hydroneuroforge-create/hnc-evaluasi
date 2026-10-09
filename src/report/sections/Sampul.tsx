@@ -64,11 +64,9 @@ export function Sampul({ siap, aset, spanduk }: PropsBagian) {
         <Text style={{ fontSize: 22, fontWeight: 700, color: WARNA.petrol, marginTop: 7, textAlign: 'center', lineHeight: 1.2 }}>{siap.anak.namaLengkap}</Text>
       </View>
       <View style={{ flexDirection: 'row', justifyContent: 'center', marginTop: 40, paddingVertical: 14, borderTopWidth: 0.6, borderBottomWidth: 0.6, borderColor: WARNA.garis }}>
-        <Info label="Periode Evaluasi" isi={siap.periode.teks} lebar={205} />
+        <Info label="Periode Evaluasi" isi={siap.periode.teks} lebar={235} />
         <View style={{ width: 0.6, backgroundColor: WARNA.garis }} />
-        <Info label="Jumlah Sesi" isi={siap.jumlahSesiTeks} lebar={110} />
-        <View style={{ width: 0.6, backgroundColor: WARNA.garis }} />
-        <Info label="Nomor Laporan" isi={siap.meta.nomor} lebar={150} />
+        <Info label="Nomor Laporan" isi={siap.meta.nomor} lebar={235} />
       </View>
       <View style={{ flexDirection: 'row', justifyContent: 'center', marginTop: 16 }}>
         {[a, b].map((p) => (

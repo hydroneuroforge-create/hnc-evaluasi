@@ -22,7 +22,7 @@ import {
   type DefinisiSkala, type SetSkala, type SkalaId, type Zona,
 } from './skala.ts';
 import { CATATAN_CAKUPAN, statusItem, type HasilSkor, type StatusItem } from './skor.ts';
-import { formatPeriode, formatTanggal, formatTanggalPanjang, formatUsia, hitungUsia, parseIso } from './tanggal.ts';
+import { formatPeriodeBulan, formatTanggal, formatTanggalPanjang, formatUsia, hitungUsia, parseIso, periodeBulan } from './tanggal.ts';
 import { buatParagraf, keRuns, teksPolos } from './teks.ts';
 import type { KegiatanId, LaporanInput, Level, NilaiKegiatan, OpsiSiapkan, Paragraf, RefleksId, Run, SensoriId } from './types.ts';
 import { validasiInput } from './validasi.ts';
@@ -93,8 +93,6 @@ export interface LaporanSiap {
     tempatTanggalLahir: string; jenisKelamin: string; usia: string; diagnosa: Run[];
   };
   periode: { awal: string; akhir: string; awalPanjang: string; akhirPanjang: string; teks: string };
-  jumlahSesi: number;
-  jumlahSesiTeks: string;
   label: { sebelum: string; sesudah: string; programIndividual: string };
   skor: HasilSkor;
   kategori: KategoriPerkembangan;
@@ -296,10 +294,8 @@ export function siapkanLaporan(input: LaporanInput, opsi: OpsiSiapkan = {}): Lap
     periode: {
       awal: formatTanggal(input.sebelum.tanggal), akhir: formatTanggal(input.sesudah.tanggal),
       awalPanjang: formatTanggalPanjang(input.sebelum.tanggal), akhirPanjang: formatTanggalPanjang(input.sesudah.tanggal),
-      teks: formatPeriode(input.sebelum.tanggal, input.sesudah.tanggal),
+      teks: formatPeriodeBulan(periodeBulan(input).awal, periodeBulan(input).akhir),
     },
-    jumlahSesi: input.laporan.jumlahSesi,
-    jumlahSesiTeks: `${input.laporan.jumlahSesi} sesi`,
     label: { ...LABEL_WAKTU, programIndividual: LABEL_PROGRAM_INDIVIDUAL },
     skor: k.skor,
     kategori: kesimpulan.kategori,
@@ -324,7 +320,7 @@ export function siapkanLaporan(input: LaporanInput, opsi: OpsiSiapkan = {}): Lap
     sensori: { baris: sensori, legenda: legSensori, judulApaArtinya: JUDUL_APA_ARTINYA },
     refleks: { baris: refleks, legenda: legRefleks, ringkasan: ringkasanRefleks(k), pengantar: pengantarGambaran(k), gambaran },
     program: { legenda: legProgram, bab, posisiSaatIni: k.skor.posisiSaatIni, adaIndividual: k.itemProgram.some((x) => x.individual) },
-    tren: { titik: k.skor.tren, domain: k.skor.domain, sesiPerBulan: sesiPerBulan(input.sesi) },
+    tren: { titik: k.skor.tren, domain: k.skor.domain, sesiPerBulan: input.opsi?.grafikSesi ? sesiPerBulan(input.sesi) : null },
     kesimpulan,
     target,
     glosarium: GLOSARIUM.map((g, i) => ({ istilah: keRuns(g.istilah), definisi: buatParagraf(`glosarium.${i}`, g.definisi.teks, g.definisi.sumber) })),

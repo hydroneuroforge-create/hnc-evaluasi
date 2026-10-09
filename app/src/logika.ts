@@ -78,7 +78,7 @@ export function profilKlinik(k: Klinik, str?: string): ProfilKlinik {
 }
 
 export interface OpsiLaporan {
-  nomor: string; tanggal: string; jumlahSesi: number; kondisiAwal: string[]; teks: Record<string, string>;
+  nomor: string; tanggal: string; periode: { awal: string; akhir: string }; kondisiAwal: string[]; teks: Record<string, string>;
 }
 
 /** Builds the full LaporanInput: BEFORE = previous finished evaluation, AFTER = this one. */
@@ -89,10 +89,11 @@ export function buatInput(anak: Anak, evaluasi: Evaluasi[], ini: Evaluasi, sesi:
   const ids = new Set(semuaItemProgram(anak.programIndividual).map((x) => x.id));
   return {
     versi: 1,
-    laporan: { nomor: opsi.nomor, tempat: 'Bogor', tanggal: opsi.tanggal, jumlahSesi: Math.max(1, opsi.jumlahSesi), evaluasiBerikutnya: { setelahSesi: SESI_EVALUASI } },
+    laporan: { nomor: opsi.nomor, tempat: 'Bogor', tanggal: opsi.tanggal, periode: opsi.periode, evaluasiBerikutnya: { setelahSesi: SESI_EVALUASI } },
     anak: {
       namaLengkap: anak.namaLengkap.trim(), namaPanggilan: anak.namaPanggilan.trim(), tempatLahir: anak.tempatLahir.trim(),
       tanggalLahir: anak.tanggalLahir, jenisKelamin: anak.jenisKelamin, diagnosa: diagnosaMarkup(anak.diagnosa.trim()),
+      ...(anak.bergabungSejak ? { bergabungSejak: anak.bergabungSejak } : {}),
     },
     sebelum: keAsesmen(sebelum.asesmen, ids),
     sesudah: keAsesmen(ini.asesmen, ids),
@@ -103,6 +104,12 @@ export function buatInput(anak: Anak, evaluasi: Evaluasi[], ini: Evaluasi, sesi:
     teks: opsi.teks,
     klinik,
   };
+}
+
+/** Suggested 'Bergabung sejak': month of the earliest logged session or evaluation. */
+export function saranBergabung(sesi: Sesi[], evaluasi: Evaluasi[]): string | undefined {
+  const t = [...sesi.map((s) => s.tanggal), ...evaluasi.map((e) => e.asesmen.tanggal)].filter(Boolean).sort()[0];
+  return t ? t.slice(0, 7) : undefined;
 }
 
 /** Sessions counted for a report: after BEFORE, up to and including AFTER. */

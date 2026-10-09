@@ -1,5 +1,6 @@
 // Shared UI pieces: navigation (hash routes), header, buttons, segmented control, toast, sharing.
 import { useCallback, useEffect, useState, type ReactNode } from 'react';
+import { NAMA_BULAN } from '../../src/core/index.ts';
 import { dengarPerubahan } from './db.ts';
 
 // --- routing -------------------------------------------------------------------------------------------------
@@ -98,6 +99,30 @@ export function Lencana({ children, warna = 'teal' }: { children: ReactNode; war
 
 export function Isian({ label, ...p }: React.InputHTMLAttributes<HTMLInputElement> & { label: string }) {
   return <label className="block"><span className="label">{label}</span><input {...p} className="isian" /></label>;
+}
+
+/** Month (Januari–Desember) + year picker; emits 'YYYY-MM', or undefined while incomplete/empty. */
+export function PilihBulan({ label, nilai, onUbah, petunjuk }: { label: string; nilai: string | undefined; onUbah: (ym: string | undefined) => void; petunjuk?: ReactNode }) {
+  const [b, setB] = useState(nilai ? String(Number(nilai.slice(5, 7))) : '');
+  const [t, setT] = useState(nilai ? nilai.slice(0, 4) : '');
+  useEffect(() => { if (nilai) { setB(String(Number(nilai.slice(5, 7)))); setT(nilai.slice(0, 4)); } }, [nilai]);
+  const ubah = (bb: string, tt: string) => {
+    setB(bb); setT(tt);
+    onUbah(bb && /^\d{4}$/.test(tt) ? `${tt}-${bb.padStart(2, '0')}` : undefined);
+  };
+  return (
+    <div>
+      <span className="label">{label}</span>
+      <div className="grid grid-cols-[1fr_6.5rem] gap-2">
+        <select className="isian" aria-label={`${label} bulan`} value={b} onChange={(e) => ubah(e.target.value, t)}>
+          <option value="">Bulan</option>
+          {NAMA_BULAN.map((n, i) => <option key={n} value={String(i + 1)}>{n}</option>)}
+        </select>
+        <input className="isian" aria-label={`${label} tahun`} inputMode="numeric" maxLength={4} placeholder="Tahun" value={t} onChange={(e) => ubah(b, e.target.value.replace(/\D/g, ''))} />
+      </div>
+      {petunjuk}
+    </div>
+  );
 }
 
 /** Segmented 1–4 control plus optional special status. */

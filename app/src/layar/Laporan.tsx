@@ -1,14 +1,14 @@
 // Report: options + narrative review (every generated paragraph editable via stable-id overrides) -> PDF in the
 // browser -> share. The full input is frozen in the report record so it re-renders identically later.
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { bank, daftarParagraf, KEGIATAN, siapkanLaporan, teksPolos, type LaporanInput, type Paragraf } from '../../../src/core/index.ts';
+import { bank, daftarParagraf, formatPeriodeBulan, KEGIATAN, periodeBulan, siapkanLaporan, teksPolos, type LaporanInput, type Paragraf } from '../../../src/core/index.ts';
 import {
   ambilAnak, ambilEvaluasi, ambilLaporan, evaluasiAnak, hapus, idBaru, sesiAnak, simpan, tulisPengaturan,
   type Anak, type Evaluasi, type Laporan, type Sesi,
 } from '../db.ts';
-import { buatInput, evaluasiSelesai, hariIni, jumlahSesiAntara, namaBerkas, tanggalTampil } from '../logika.ts';
+import { buatInput, evaluasiSelesai, hariIni, namaBerkas, tanggalTampil, type OpsiLaporan } from '../logika.ts';
 import { catatNomor, konteksKlinik, nomorBerikutnya } from '../pengaturan.ts';
-import { bagikanBerkas, Isian, Kartu, keRute, Layar, toast, Tombol, unduhBerkas } from '../ui.tsx';
+import { bagikanBerkas, Isian, Kartu, keRute, Layar, PilihBulan, toast, Tombol, unduhBerkas } from '../ui.tsx';
 
 const muatPdf = () => import('../pdf.ts');
 
@@ -29,7 +29,7 @@ interface Konteks { anak: Anak; ev: Evaluasi; semua: Evaluasi[]; sesi: Sesi[] }
 /** New report from a finished Evaluasi Lanjutan. */
 export function BuatLaporan({ evaluasiId }: { evaluasiId: string }) {
   const [k, setK] = useState<Konteks | null>(null);
-  const [opsi, setOpsi] = useState<{ nomor: string; tanggal: string; jumlahSesi: number; kondisiAwal: string[]; teks: Record<string, string> } | null>(null);
+  const [opsi, setOpsi] = useState<(Omit<OpsiLaporan, 'periode'> & { periode: { awal?: string; akhir?: string } }) | null>(null);
   const idLaporan = useRef(idBaru());
   useEffect(() => {
     void (async () => {
@@ -41,7 +41,7 @@ export function BuatLaporan({ evaluasiId }: { evaluasiId: string }) {
       const sebelum = evaluasiSelesai(semua).filter((e) => e.id !== ev.id && e.asesmen.tanggal <= ev.asesmen.tanggal).pop();
       const tanggal = hariIni();
       setK({ anak, ev, semua, sesi });
-      setOpsi({ nomor: await nomorBerikutnya(tanggal), tanggal, jumlahSesi: sebelum ? jumlahSesiAntara(sesi, sebelum.asesmen.tanggal, ev.asesmen.tanggal) : sesi.length, kondisiAwal: [], teks: {} });
+      setOpsi({ nomor: await nomorBerikutnya(tanggal), tanggal, periode: { awal: anak.bergabungSejak ?? sebelum?.asesmen.tanggal.slice(0, 7) ?? ev.asesmen.tanggal.slice(0, 7), akhir: ev.asesmen.tanggal.slice(0, 7) }, kondisiAwal: [], teks: {} });
     })();
   }, [evaluasiId]);
 
@@ -50,7 +50,10 @@ export function BuatLaporan({ evaluasiId }: { evaluasiId: string }) {
 
   const { input, galat } = useMemo<{ input: LaporanInput | null; galat: string }>(() => {
     if (!k || !opsi || !klinik) return { input: null, galat: '' };
-    try { return { input: buatInput(k.anak, k.semua, k.ev, k.sesi, opsi, klinik.klinik), galat: '' }; } catch (e) { return { input: null, galat: (e as Error).message }; }
+    const { awal, akhir } = opsi.periode;
+    if (!awal || !akhir) return { input: null, galat: 'Lengkapi bulan dan tahun periode di laporan.' };
+    if (awal > akhir) return { input: null, galat: 'Awal periode tidak boleh setelah akhir periode.' };
+    try { return { input: buatInput(k.anak, k.semua, k.ev, k.sesi, { ...opsi, periode: { awal, akhir } }, klinik.klinik), galat: '' }; } catch (e) { return { input: null, galat: (e as Error).message }; }
   }, [k, opsi, klinik]);
 
   if (!k || !opsi) return null;
@@ -73,7 +76,14 @@ export function BuatLaporan({ evaluasiId }: { evaluasiId: string }) {
             const otomatis = opsi.nomor === (await nomorBerikutnya(opsi.tanggal));
             setOpsi({ ...opsi, tanggal: t, ...(otomatis ? { nomor: await nomorBerikutnya(t) } : {}) });
           }} />
-          <Isian label="Jumlah sesi" type="number" inputMode="numeric" min={1} value={opsi.jumlahSesi} onChange={(e) => setOpsi({ ...opsi, jumlahSesi: Number(e.target.value) || 0 })} />
+        </div>
+        <div className="space-y-3">
+          <span className="label">Periode di laporan</span>
+          <PilihBulan label="Dari" nilai={opsi.periode.awal} onUbah={(awal) => setOpsi({ ...opsi, periode: { ...opsi.periode, awal } })} />
+          <PilihBulan label="Sampai" nilai={opsi.periode.akhir} onUbah={(akhir) => setOpsi({ ...opsi, periode: { ...opsi.periode, akhir } })} />
+          {opsi.periode.awal && opsi.periode.akhir && opsi.periode.awal <= opsi.periode.akhir
+            ? <p className="text-[15px] text-navy" data-pratinjau-periode>Tertulis di laporan: <b>{formatPeriodeBulan(opsi.periode.awal, opsi.periode.akhir)}</b></p>
+            : <p className="text-[14px] text-[#9b3b2f]">Periode belum lengkap atau awal setelah akhir.</p>}
         </div>
         <div>
           <span className="label">Kondisi awal Ananda (opsional)</span>
@@ -210,7 +220,7 @@ export function LihatLaporan({ id }: { id: string }) {
     <Layar judul="Laporan" kembali={`/anak/${anak.id}`}>
       <Kartu>
         <p className="font-bold text-navy text-[17px]">{l.nomor}</p>
-        <p className="text-lembut text-[15px]">{anak.namaLengkap} · {tanggalTampil(l.tanggal)} · {l.input.laporan.jumlahSesi} sesi</p>
+        <p className="text-lembut text-[15px]">{anak.namaLengkap} · {tanggalTampil(l.tanggal)} · {formatPeriodeBulan(periodeBulan(l.input).awal, periodeBulan(l.input).akhir)}</p>
         <p className="text-[13px] text-samar mt-1">Isi laporan dibekukan saat dibuat, sehingga PDF yang dibuat ulang tetap sama.</p>
       </Kartu>
       <PembuatPdf input={l.input} anak={anak} ttd={ttd} labelTombol="Buka PDF laporan" />
@@ -226,7 +236,7 @@ function saranPencapaian(l: Laporan): string {
   try {
     const judul = daftarParagraf(siapkanLaporan(l.input)).filter((p) => /^sorotan\..*\.judul$/.test(p.id)).map((p) => teksPolos(p.markup).replace(/[.:]$/, '').toLowerCase());
     const daftar = judul.length > 1 ? `${judul.slice(0, -1).join(', ')} dan ${judul[judul.length - 1]}` : judul[0] ?? 'kemampuannya';
-    return `menunjukkan perkembangan pada ${daftar} selama ${l.input.laporan.jumlahSesi} sesi hidroterapi`;
+    return `menunjukkan perkembangan pada ${daftar} selama program hidroterapi`;
   } catch { return 'menunjukkan perkembangan yang membanggakan selama program hidroterapi'; }
 }
 

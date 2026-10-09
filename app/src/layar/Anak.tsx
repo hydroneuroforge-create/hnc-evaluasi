@@ -3,8 +3,9 @@ import {
   ambilAnak, asesmenKosong, evaluasiAnak, hapus, hapusAnak, idBaru, laporanAnak, sesiAnak, simpan,
   type Anak, type Evaluasi,
 } from '../db.ts';
-import { DIAGNOSA_SARAN, hariIni, SESI_EVALUASI, sesiSejakEvaluasi, tanggalTampil, usiaTampil } from '../logika.ts';
-import { Isian, Kartu, keRute, Layar, Lencana, toast, Tombol, useData } from '../ui.tsx';
+import { formatBulanTahun } from '../../../src/core/index.ts';
+import { DIAGNOSA_SARAN, hariIni, saranBergabung, SESI_EVALUASI, sesiSejakEvaluasi, tanggalTampil, usiaTampil } from '../logika.ts';
+import { Isian, Kartu, keRute, Layar, Lencana, PilihBulan, toast, Tombol, useData } from '../ui.tsx';
 import { catatSesiHariIni } from './Beranda.tsx';
 
 const kosong = (): Anak => ({
@@ -13,7 +14,12 @@ const kosong = (): Anak => ({
 
 export function FormAnak({ id }: { id?: string }) {
   const [a, setA] = useState<Anak | null>(id ? null : kosong());
-  useEffect(() => { if (id) void ambilAnak(id).then((x) => setA(x ?? kosong())); }, [id]);
+  const [saran, setSaran] = useState<string | undefined>();
+  useEffect(() => {
+    if (!id) return;
+    void ambilAnak(id).then((x) => setA(x ?? kosong()));
+    void Promise.all([sesiAnak(id), evaluasiAnak(id)]).then(([s, e]) => setSaran(saranBergabung(s, e)));
+  }, [id]);
   if (!a) return null;
   const set = (p: Partial<Anak>) => setA({ ...a, ...p });
   const lengkap = a.namaLengkap.trim() && a.namaPanggilan.trim() && a.tempatLahir.trim() && a.tanggalLahir && a.diagnosa.trim();
@@ -31,6 +37,9 @@ export function FormAnak({ id }: { id?: string }) {
           <Isian label="Tempat lahir" value={a.tempatLahir} onChange={(e) => set({ tempatLahir: e.target.value })} />
           <Isian label="Tanggal lahir" type="date" value={a.tanggalLahir} max={hariIni()} onChange={(e) => set({ tanggalLahir: e.target.value })} />
         </div>
+        <PilihBulan label="Bergabung sejak" nilai={a.bergabungSejak} onUbah={(ym) => { const { bergabungSejak: _, ...r } = a; setA(ym ? { ...r, bergabungSejak: ym } : r); }}
+          petunjuk={<p className="text-[13px] text-samar mt-1">Dianjurkan diisi: menjadi awal periode di laporan.
+            {!a.bergabungSejak && saran ? <> <button type="button" className="text-petrol font-semibold underline" onClick={() => set({ bergabungSejak: saran })}>Pakai {formatBulanTahun(saran)}</button> (sesi/evaluasi pertama)</> : null}</p>} />
         <div>
           <span className="label">Jenis kelamin</span>
           <div className="grid grid-cols-2 gap-2">
@@ -87,6 +96,7 @@ export function ProfilAnak({ id }: { id: string }) {
         <p className="text-[19px] font-bold text-navy">{anak.namaLengkap}</p>
         <p className="text-lembut text-[15px] mt-0.5">{anak.tempatLahir}, {tanggalTampil(anak.tanggalLahir)} · {usiaTampil(anak.tanggalLahir)} · {anak.jenisKelamin === 'L' ? 'Laki-laki' : 'Perempuan'}</p>
         <p className="text-[15px] mt-1">{anak.diagnosa}</p>
+        {anak.bergabungSejak ? <p className="text-[14px] text-lembut mt-0.5">Bergabung sejak {formatBulanTahun(anak.bergabungSejak)}</p> : null}
         <div className="mt-3 flex flex-wrap gap-2 items-center">
           <span className="text-[14px]">Sesi sejak evaluasi terakhir: <b>{n}/{SESI_EVALUASI}</b></span>
           {n >= SESI_EVALUASI ? <Lencana>Siap evaluasi</Lencana> : null}

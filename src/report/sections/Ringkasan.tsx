@@ -26,8 +26,7 @@ function Identitas({ siap }: Pick<PropsBagian, 'siap'>) {
       </View>
       {sel('Usia', <Text style={teks}>{siap.anak.usia}</Text>, 1.25)}
       {sel('Diagnosa', <TeksKaya isi={siap.anak.diagnosa} style={teks} />, 1.75)}
-      {sel('Periode', <Text style={teks}>{tanpaPutus(siap.periode.teks)}</Text>, 2.2)}
-      {sel('Sesi', <Text style={teks}>{siap.jumlahSesiTeks}</Text>, 0.75)}
+      {sel('Periode', <Text style={teks}>{tanpaPutus(siap.periode.teks)}</Text>, 2.95)}
     </View>
   );
 }
