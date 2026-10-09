@@ -55,7 +55,7 @@ function KartuAnak({ anak, sesi, evaluasi }: { anak: Anak; sesi: Sesi[]; evaluas
         </div>
         <div className="mt-2 h-1.5 rounded-full bg-latar overflow-hidden"><div className="h-full bg-aqua rounded-full" style={{ width: `${Math.min(100, (n / SESI_EVALUASI) * 100)}%` }} /></div>
       </button>
-      <Tombol varian="kedua" className="w-full mt-3" onClick={() => void catatSesiHariIni(anak)}>✓ Catat sesi hari ini</Tombol>
+      <Tombol varian="kedua" className="w-full mt-3" onClick={() => void catatSesiHariIni(anak)}>+ Catat sesi hari ini</Tombol>
     </div>
   );
 }

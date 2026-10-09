@@ -136,7 +136,7 @@ export function ProfilAnak({ id }: { id: string }) {
         <div className="flex items-center justify-between mb-2">
           <h2 className="font-bold text-navy text-[16px]">Sesi terapi ({sesi.length})</h2>
         </div>
-        <Tombol varian="kedua" className="w-full" onClick={() => void catatSesiHariIni(anak)}>✓ Catat sesi hari ini</Tombol>
+        <Tombol varian="kedua" className="w-full" onClick={() => void catatSesiHariIni(anak)}>+ Catat sesi hari ini</Tombol>
         <div className="flex gap-2 mt-3">
           <input type="date" className="isian flex-1" value={tglSesi} max={hariIni()} onChange={(e) => setTglSesi(e.target.value)} aria-label="Tanggal sesi" />
           <Tombol varian="halus" disabled={!tglSesi} onClick={async () => { await simpan('sesi', { id: idBaru(), anakId: id, tanggal: tglSesi, dibuat: Date.now() }); toast(`Sesi ${tanggalTampil(tglSesi)} ditambahkan.`); }}>Tambah</Tombol>

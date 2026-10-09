@@ -31,7 +31,9 @@ body {
   -webkit-tap-highlight-color: transparent;
   overscroll-behavior-y: none;
 }
-input, textarea, select, button { font: inherit; color: inherit; }
+@layer base {
+  input, textarea, select, button { font: inherit; color: inherit; }
+}
 /* iOS zooms into inputs below 16px. */
 input, textarea, select { font-size: 16px; }
 
