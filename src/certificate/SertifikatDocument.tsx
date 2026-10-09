@@ -2,7 +2,7 @@
 // signatures (names underlined + roles) inside a fine petrol frame with a quiet wave motif. Consumes only
 // SertifikatSiap + AsetRender. Not promotional: no photo, slogan, CTA, numbers or STR — only a tiny grey IG handle.
 // Variants: 'a4' = A4 landscape (print); 'sosial' = 540×675 pt (rasterised at zoom 2 to 1080×1350 px).
-// Partner children (siap.mitraYasi): YASI logo beside the lockup (LogoKemitraan, height × g.mitra); layout unchanged.
+// Partner children (siap.mitraYasi): YASI logo beside the lockup (LogoKemitraan, same height, one row); layout unchanged.
 import { Defs, Document, Image, LinearGradient, Page, Path, Stop, Svg, Text, View } from '@react-pdf/renderer';
 import type { SertifikatSiap } from '../core/index.ts';
 import type { AsetRender } from '../report/aset.ts';
@@ -16,13 +16,13 @@ export type VarianSertifikat = 'a4' | 'sosial';
 const UKURAN_VARIAN = {
   a4: {
     lebar: HALAMAN.tinggi, tinggi: HALAMAN.lebar, bingkai: 20, sela: 6, gelombang: 64,
-    logo: 150, mitra: 1.35, judul: 32, inggris: 12, kepada: 10, nama: 27, pencapaian: 12.5, tanggal: 10,
+    logo: 150, judul: 32, inggris: 12, kepada: 10, nama: 27, pencapaian: 12.5, tanggal: 10,
     ttdLebar: 102, ttdTinggi: 46, kolomTtd: 230, namaTtd: 9.6, peran: 8.2, ig: 6.5,
     atas: 56, jarakJudul: 24, jarakNama: 18, jarakTtd: 28,
   },
   sosial: {
     lebar: 540, tinggi: 675, bingkai: 16, sela: 5, gelombang: 62,
-    logo: 140, mitra: 1.25, judul: 28, inggris: 11, kepada: 9.5, nama: 21.5, pencapaian: 11.5, tanggal: 9.5,
+    logo: 140, judul: 28, inggris: 11, kepada: 9.5, nama: 21.5, pencapaian: 11.5, tanggal: 9.5,
     ttdLebar: 96, ttdTinggi: 46, kolomTtd: 210, namaTtd: 8.8, peran: 7.6, ig: 6.5,
     atas: 62, jarakJudul: 40, jarakNama: 30, jarakTtd: 50,
   },
@@ -103,7 +103,7 @@ export function SertifikatDocument({ siap, aset, varian = 'a4', tandaTangan = va
 
         <View style={{ position: 'absolute', top: g.atas, left: 0, right: 0, alignItems: 'center', paddingHorizontal: 60 }}>
           {siap.mitraYasi ? (
-            <LogoKemitraan lockup={aset.logoLockup} lebar={g.logo} tinggi={g.logo * rasioLogo} yasi={aset.logoYasi} skala={g.mitra} />
+            <LogoKemitraan lockup={aset.logoLockup} lebar={g.logo} tinggi={g.logo * rasioLogo} yasi={aset.logoYasi} />
           ) : (
             <Image src={aset.logoLockup} style={{ width: g.logo, height: g.logo * rasioLogo }} />
           )}
